@@ -1,24 +1,25 @@
-## DB
+## Reproduction of Pal.js bug
 
-We added `sqlite` as db provider in `schema.prisma` you can change it to your custom db provider
+This is a clone of [paljs/prisma-tools/packages/create/examples/apollo-sdl-first](https://github.com/paljs/prisma-tools/tree/main/packages/create/examples/apollo-sdl-first). This is a bug reproduction of a simple _one-to-many_ example not code generating `ProductUpdateManyMutationInput` interface.
 
-after an update your `schema.prisma` run
+```gql
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
 
-```shell
-yarn db-dev
+  products Product[]
+}
+
+model Product {
+  id      Int  @id @default(autoincrement())
+  owner   User @relation(fields: [ownerId], references: [id])
+  ownerId Int
+}
 ```
 
-this commands will save your schema into db
+Notice how the definition for `ProductUpdateManyMutationInput` is not being generated.
+https://github.com/ZenSoftware/pal-repro/blob/63cddd8b32324f2a83b658f27b65bf52137fccde/src/resolversTypes.ts#L482-L485
 
-now run
-
-```shell
-yarn generate
-yarn dev
-```
-
-- build prisma client
-- build crud system
-- start dev server
-
-`Good work`
+Though `UserUpdateManyMutationInput` is being generated.
+https://github.com/ZenSoftware/pal-repro/blob/63cddd8b32324f2a83b658f27b65bf52137fccde/src/resolversTypes.ts#L605-L608
