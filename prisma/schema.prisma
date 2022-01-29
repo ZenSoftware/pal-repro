@@ -7,45 +7,16 @@ generator client {
   provider        = "prisma-client-js"
 }
 
-// models examples
 model User {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  email     String    @unique
-  name      String?
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
   password  String
-  posts     Post[]
-  group     Group?    @relation(fields: [groupId], onDelete: SetNull, references: [id])
-  groupId   Int?
-  comments  Comment[]
+
+  products Product[]
 }
 
-model Post {
-  id        Int       @id @default(autoincrement())
-  published Boolean   @default(false)
-  title     String
-  author    User?     @relation(fields: [authorId], onDelete: Cascade, references: [id])
-  authorId  Int?
-  comments  Comment[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-}
-
-model Comment {
-  id        Int      @id @default(autoincrement())
-  contain   String
-  post      Post     @relation(fields: [postId], onDelete: Cascade, references: [id])
-  postId    Int
-  author    User?    @relation(fields: [authorId], onDelete: SetNull, references: [id])
-  authorId  Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Group {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  users     User[]
+model Product {
+  id      Int  @id @default(autoincrement())
+  owner   User @relation(fields: [ownerId], references: [id])
+  ownerId Int
 }
